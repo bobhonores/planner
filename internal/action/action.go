@@ -1,3 +1,4 @@
+//go:generate mockgen -destination=action_mocks_test.go -package=action github.com/bobhonores/planner/internal/action Repository
 package action
 
 import (
@@ -30,7 +31,7 @@ type Service struct {
 	Repository Repository
 }
 
-func NewService(repository Repository) *Service {
+func New(repository Repository) *Service {
 	return &Service{
 		Repository: repository,
 	}
