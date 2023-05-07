@@ -37,7 +37,7 @@ func New(repository Repository) *Service {
 	}
 }
 
-func (s *Service) Get(
+func (s *Service) GetByID(
 	ctx context.Context,
 	id uuid.UUID,
 ) (Action, error) {

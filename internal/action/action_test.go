@@ -25,7 +25,7 @@ func TestActionService(t *testing.T) {
 			}, nil)
 
 		actionService := New(actionRepositoryMock)
-		action, err := actionService.Get(
+		action, err := actionService.GetByID(
 			context.Background(),
 			actionId,
 		)

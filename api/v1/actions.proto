@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+
+option go_package = "github.com/bobhonores/planner/api/v1";
+
+service ActionService {
+    rpc GetAction (GetActionRequest) returns (GetActionResponse);
+    rpc AddAction (AddActionRequest) returns (AddActionResponse);
+    rpc UpdateAction (UpdateActionRequest) returns (UpdateActionResponse);
+    rpc DeleteAction (DeleteActionRequest) returns (DeleteActionResponse);
+}
+
+message Action {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    bool done = 4;
+    google.protobuf.Timestamp created = 5;
+    google.protobuf.Timestamp updated = 6;    
+}
+
+message GetActionRequest {
+    string id = 1;
+}
+
+message GetActionResponse {
+    Action action = 1;
+}
+
+message AddActionRequest {
+    string name = 1;
+    string description = 2;
+    bool done = 3;
+}
+
+message AddActionResponse {
+    Action action = 1;
+}
+
+message UpdateActionRequest {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    bool done = 4;
+}
+
+message UpdateActionResponse {
+    Action action = 1;
+}
+
+message DeleteActionRequest {
+    string id = 1;
+}
+
+message DeleteActionResponse {
+    string status = 1;
+}
