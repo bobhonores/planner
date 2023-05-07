@@ -94,7 +94,7 @@ func (d *Database) Delete(
 ) error {
 	_, err := d.Client.ExecContext(
 		ctx,
-		`DELETE FROM action WHERE id = $1`,
+		`DELETE FROM actions WHERE id = $1`,
 		id,
 	)
 

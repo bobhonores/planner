@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	api "github.com/bobhonores/planner/api/v1"
@@ -86,9 +87,21 @@ func (h *Handler) UpdateAction(ctx context.Context, req *api.UpdateActionRequest
 			LastOperation: timestamppb.New(action.Updated),
 		},
 	}, nil
-
 }
 
 func (h *Handler) DeleteAction(ctx context.Context, req *api.DeleteActionRequest) (*api.DeleteActionResponse, error) {
-	return &api.DeleteActionResponse{}, nil
+	actionID, err := uuid.Parse(req.Id)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("incorrect id format")
+	}
+
+	if err := h.ActionService.Delete(ctx, actionID); err != nil {
+		log.Println(err)
+		return nil, errors.New("cannot insert the action")
+	}
+
+	return &api.DeleteActionResponse{
+		Status: fmt.Sprintf("%v was deleted", req.Id),
+	}, nil
 }
