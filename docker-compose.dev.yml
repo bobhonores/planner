@@ -29,6 +29,7 @@ services:
       - SSL_MODE=disable
     ports:
       - "8080:8080"
+      - "50051:50051"
       - "4040:4040"
     depends_on:
       - db
