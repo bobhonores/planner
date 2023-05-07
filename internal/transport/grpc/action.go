@@ -24,14 +24,14 @@ func (h *Handler) GetAction(ctx context.Context, req *api.GetActionRequest) (*ap
 
 	response := api.GetActionResponse{
 		Action: &api.Action{
-			Id:          action.ID.String(),
-			Name:        action.Name,
-			Description: action.Description,
-			Done:        action.Done,
-			Created:     timestamppb.New(action.Created),
+			Id:            action.ID.String(),
+			Name:          action.Name,
+			Description:   action.Description,
+			Done:          action.Done,
+			LastOperation: timestamppb.New(action.Created),
 		}}
 	if !action.Updated.IsZero() {
-		response.Action.Updated = timestamppb.New(action.Updated)
+		response.Action.LastOperation = timestamppb.New(action.Updated)
 	}
 
 	return &response, nil
@@ -50,17 +50,43 @@ func (h *Handler) AddAction(ctx context.Context, req *api.AddActionRequest) (*ap
 
 	return &api.AddActionResponse{
 		Action: &api.Action{
-			Id:          action.ID.String(),
-			Name:        action.Name,
-			Description: action.Description,
-			Done:        action.Done,
-			Created:     timestamppb.New(action.Created),
+			Id:            action.ID.String(),
+			Name:          action.Name,
+			Description:   action.Description,
+			Done:          action.Done,
+			LastOperation: timestamppb.New(action.Created),
 		},
 	}, nil
 }
 
 func (h *Handler) UpdateAction(ctx context.Context, req *api.UpdateActionRequest) (*api.UpdateActionResponse, error) {
-	return &api.UpdateActionResponse{}, nil
+	actionID, err := uuid.Parse(req.Id)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("incorrect id format")
+	}
+
+	action, err := h.ActionService.Update(ctx, action.Action{
+		ID:          actionID,
+		Name:        req.Name,
+		Description: req.Description,
+		Done:        req.Done,
+	})
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("cannot insert the action")
+	}
+
+	return &api.UpdateActionResponse{
+		Action: &api.Action{
+			Id:            action.ID.String(),
+			Name:          action.Name,
+			Description:   action.Description,
+			Done:          action.Done,
+			LastOperation: timestamppb.New(action.Updated),
+		},
+	}, nil
+
 }
 
 func (h *Handler) DeleteAction(ctx context.Context, req *api.DeleteActionRequest) (*api.DeleteActionResponse, error) {
