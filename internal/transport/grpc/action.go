@@ -15,12 +15,12 @@ import (
 func (h *Handler) GetAction(ctx context.Context, req *api.GetActionRequest) (*api.GetActionResponse, error) {
 	actionID, err := uuid.Parse(req.GetId())
 	if err != nil {
-		return nil, errors.New("incorrect id format")
+		return &api.GetActionResponse{}, errors.New("incorrect id format")
 	}
 
 	action, err := h.ActionService.GetByID(ctx, actionID)
 	if err != nil {
-		return nil, errors.New("action not found")
+		return &api.GetActionResponse{}, errors.New("action not found")
 	}
 
 	response := api.GetActionResponse{
@@ -46,7 +46,7 @@ func (h *Handler) AddAction(ctx context.Context, req *api.AddActionRequest) (*ap
 	})
 	if err != nil {
 		log.Println(err)
-		return nil, errors.New("cannot insert the action")
+		return &api.AddActionResponse{}, errors.New("cannot insert the action")
 	}
 
 	return &api.AddActionResponse{
@@ -64,7 +64,7 @@ func (h *Handler) UpdateAction(ctx context.Context, req *api.UpdateActionRequest
 	actionID, err := uuid.Parse(req.Id)
 	if err != nil {
 		log.Println(err)
-		return nil, errors.New("incorrect id format")
+		return &api.UpdateActionResponse{}, errors.New("incorrect id format")
 	}
 
 	action, err := h.ActionService.Update(ctx, action.Action{
@@ -75,7 +75,7 @@ func (h *Handler) UpdateAction(ctx context.Context, req *api.UpdateActionRequest
 	})
 	if err != nil {
 		log.Println(err)
-		return nil, errors.New("cannot insert the action")
+		return &api.UpdateActionResponse{}, errors.New("cannot insert the action")
 	}
 
 	return &api.UpdateActionResponse{
@@ -93,12 +93,12 @@ func (h *Handler) DeleteAction(ctx context.Context, req *api.DeleteActionRequest
 	actionID, err := uuid.Parse(req.Id)
 	if err != nil {
 		log.Println(err)
-		return nil, errors.New("incorrect id format")
+		return &api.DeleteActionResponse{}, errors.New("incorrect id format")
 	}
 
 	if err := h.ActionService.Delete(ctx, actionID); err != nil {
 		log.Println(err)
-		return nil, errors.New("cannot insert the action")
+		return &api.DeleteActionResponse{}, errors.New("cannot insert the action")
 	}
 
 	return &api.DeleteActionResponse{
