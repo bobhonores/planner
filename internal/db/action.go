@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/bobhonores/planner/internal/action"
 	"github.com/google/uuid"
@@ -62,13 +61,12 @@ func (d *Database) Insert(
 	ctx context.Context,
 	act action.Action,
 ) (action.Action, error) {
-	act.ID = uuid.New()
 	actionRow := ActionRow{
 		ID:          act.ID.String(),
 		Name:        sql.NullString{String: act.Name, Valid: true},
 		Description: sql.NullString{String: act.Description, Valid: true},
 		Done:        sql.NullBool{Bool: act.Done, Valid: true},
-		Created:     sql.NullTime{Time: time.Now().UTC(), Valid: true},
+		Created:     sql.NullTime{Time: act.Created, Valid: true},
 	}
 
 	rows, err := d.Client.NamedQueryContext(
