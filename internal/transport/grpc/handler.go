@@ -1,29 +1,20 @@
 package grpc
 
 import (
-	"context"
 	"log"
 	"net"
 
 	api "github.com/bobhonores/planner/api/v1"
 	"github.com/bobhonores/planner/internal/action"
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
 )
 
-type ActionService interface {
-	GetByID(context.Context, uuid.UUID) (action.Action, error)
-	Insert(context.Context, action.Action) (action.Action, error)
-	Update(context.Context, action.Action) (action.Action, error)
-	Delete(context.Context, uuid.UUID) error
-}
-
 type Handler struct {
-	ActionService ActionService
-	api.UnimplementedActionServiceServer
+	ActionService                        action.ActionService
+	api.UnimplementedActionServiceServer // This is required for gRPC service
 }
 
-func New(actService ActionService) Handler {
+func New(actService action.ActionService) Handler {
 	return Handler{
 		ActionService: actService,
 	}

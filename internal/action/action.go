@@ -18,6 +18,13 @@ type Action struct {
 	Updated     time.Time
 }
 
+type ActionService interface {
+	GetByID(context.Context, uuid.UUID) (Action, error)
+	Insert(context.Context, Action) (Action, error)
+	Update(context.Context, Action) (Action, error)
+	Delete(context.Context, uuid.UUID) error
+}
+
 // Repository defines the interface to be used in the service
 type Repository interface {
 	Get(context.Context, string) (Action, error)
