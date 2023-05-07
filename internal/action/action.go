@@ -60,6 +60,8 @@ func (s *Service) Insert(
 	ctx context.Context,
 	action Action,
 ) (Action, error) {
+	action.ID = uuid.New()
+	action.Created = time.Now().UTC()
 	insertedAction, err := s.Repository.Insert(ctx, action)
 	if err != nil {
 		return Action{}, err
@@ -72,6 +74,7 @@ func (s *Service) Update(
 	ctx context.Context,
 	action Action,
 ) (Action, error) {
+	action.Updated = time.Now().UTC()
 	updatedAction, err := s.Repository.Update(ctx, action)
 	if err != nil {
 		return Action{}, err
