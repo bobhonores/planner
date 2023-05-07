@@ -8,6 +8,7 @@ import (
 	api "github.com/bobhonores/planner/api/v1"
 	"github.com/bobhonores/planner/internal/action"
 	"github.com/google/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (h *Handler) GetAction(ctx context.Context, req *api.GetActionRequest) (*api.GetActionResponse, error) {
@@ -15,18 +16,25 @@ func (h *Handler) GetAction(ctx context.Context, req *api.GetActionRequest) (*ap
 	if err != nil {
 		return nil, errors.New("incorrect id format")
 	}
+
 	action, err := h.ActionService.GetByID(ctx, actionID)
 	if err != nil {
 		return nil, errors.New("action not found")
 	}
-	return &api.GetActionResponse{
+
+	response := api.GetActionResponse{
 		Action: &api.Action{
 			Id:          action.ID.String(),
 			Name:        action.Name,
 			Description: action.Description,
 			Done:        action.Done,
-		},
-	}, nil
+			Created:     timestamppb.New(action.Created),
+		}}
+	if !action.Updated.IsZero() {
+		response.Action.Updated = timestamppb.New(action.Updated)
+	}
+
+	return &response, nil
 }
 
 func (h *Handler) AddAction(ctx context.Context, req *api.AddActionRequest) (*api.AddActionResponse, error) {
@@ -46,6 +54,7 @@ func (h *Handler) AddAction(ctx context.Context, req *api.AddActionRequest) (*ap
 			Name:        action.Name,
 			Description: action.Description,
 			Done:        action.Done,
+			Created:     timestamppb.New(action.Created),
 		},
 	}, nil
 }
