@@ -17,8 +17,7 @@ message Action {
     string name = 2;
     string description = 3;
     bool done = 4;
-    google.protobuf.Timestamp created = 5;
-    google.protobuf.Timestamp updated = 6;    
+    google.protobuf.Timestamp lastOperation = 5;    
 }
 
 message GetActionRequest {
