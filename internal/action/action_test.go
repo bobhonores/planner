@@ -34,53 +34,48 @@ func TestActionService(t *testing.T) {
 	})
 
 	t.Run("test insert action", func(t *testing.T) {
-		actionRepositoryMock := NewMockRepository(mockCtrl)
-		id := "c5392c8b-6a11-4868-9582-2d8d71118f50"
-		actionId, _ := uuid.Parse(id)
-		actionRepositoryMock.
-			EXPECT().
-			Insert(context.Background(), Action{ID: actionId}).
-			Return(Action{
-				ID: actionId,
-			}, nil)
+		fakeRepository := NewFakeActionRepository()
 
-		actionService := New(actionRepositoryMock)
+		inputCtx := context.Background()
+		inputAction := Action{
+			Name:        "todo",
+			Description: "demo description",
+		}
+
+		actionService := New(fakeRepository)
 		insertedAction, err := actionService.Insert(
-			context.Background(),
-			Action{ID: actionId},
+			inputCtx,
+			inputAction,
 		)
 		assert.NoError(t, err)
-		assert.Equal(t, id, insertedAction.ID.String())
+		assert.NotEmpty(t, insertedAction.ID.String())
+		assert.Equal(t, "todo", insertedAction.Name)
+		assert.Equal(t, "demo description", insertedAction.Description)
 	})
 
 	t.Run("test update action", func(t *testing.T) {
-		actionRepositoryMock := NewMockRepository(mockCtrl)
-		id := "c5392c8b-6a11-4868-9582-2d8d71118f50"
-		name := "test"
-		actionId, _ := uuid.Parse(id)
-		actionRepositoryMock.
-			EXPECT().
-			Update(context.Background(),
-				Action{
-					ID:   actionId,
-					Name: name,
-				}).
-			Return(Action{
-				ID:   actionId,
-				Name: name,
-			}, nil)
+		fakeRepository := NewFakeActionRepository()
 
-		actionService := New(actionRepositoryMock)
+		id := "c5392c8b-6a11-4868-9582-2d8d71118f50"
+		actionId, _ := uuid.Parse(id)
+
+		inputCtx := context.Background()
+		inputAction := Action{
+			ID:          actionId,
+			Name:        "todo",
+			Description: "demo description",
+		}
+
+		actionService := New(fakeRepository)
 		updatedAction, err := actionService.Update(
-			context.Background(),
-			Action{
-				ID:   actionId,
-				Name: name,
-			},
+			inputCtx,
+			inputAction,
 		)
 		assert.NoError(t, err)
 		assert.Equal(t, id, updatedAction.ID.String())
-		assert.Equal(t, name, updatedAction.Name)
+		assert.Equal(t, "todo", updatedAction.Name)
+		assert.Equal(t, "demo description", updatedAction.Description)
+		assert.Condition(t, func() bool { return !updatedAction.Updated.IsZero() })
 	})
 
 	t.Run("test delete action by id", func(t *testing.T) {
