@@ -7,3 +7,5 @@
 - [ ] Migrate from Gorilla to Gin, Fiber or Chin
 - [ ] Add GraphQL endpoint
 - [ ] Support for asynchronous messages (RabbitMQ or NATS)
+- [ ] Adding logging
+- [ ] Adding telemetry
