@@ -2,25 +2,30 @@ package grpc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 
 	api "github.com/bobhonores/planner/api/v1"
 	"github.com/bobhonores/planner/internal/action"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (h *Handler) GetAction(ctx context.Context, req *api.GetActionRequest) (*api.GetActionResponse, error) {
 	actionID, err := uuid.Parse(req.GetId())
 	if err != nil {
-		return &api.GetActionResponse{}, errors.New("incorrect id format")
+		log.Print(err)
+		errorStatus := status.Error(codes.InvalidArgument, "incorrect id format")
+		return &api.GetActionResponse{}, errorStatus
 	}
 
 	action, err := h.ActionService.GetByID(ctx, actionID)
 	if err != nil {
-		return &api.GetActionResponse{}, errors.New("action not found")
+		log.Print(err)
+		errorStatus := status.Error(codes.NotFound, "action not found")
+		return &api.GetActionResponse{}, errorStatus
 	}
 
 	response := api.GetActionResponse{
@@ -46,7 +51,8 @@ func (h *Handler) AddAction(ctx context.Context, req *api.AddActionRequest) (*ap
 	})
 	if err != nil {
 		log.Println(err)
-		return &api.AddActionResponse{}, errors.New("cannot insert the action")
+		errorStatus := status.Error(codes.Internal, "cannot insert the action")
+		return &api.AddActionResponse{}, errorStatus
 	}
 
 	return &api.AddActionResponse{
@@ -64,7 +70,8 @@ func (h *Handler) UpdateAction(ctx context.Context, req *api.UpdateActionRequest
 	actionID, err := uuid.Parse(req.Id)
 	if err != nil {
 		log.Println(err)
-		return &api.UpdateActionResponse{}, errors.New("incorrect id format")
+		errorStatus := status.Error(codes.InvalidArgument, "incorrect id format")
+		return &api.UpdateActionResponse{}, errorStatus
 	}
 
 	action, err := h.ActionService.Update(ctx, action.Action{
@@ -75,7 +82,8 @@ func (h *Handler) UpdateAction(ctx context.Context, req *api.UpdateActionRequest
 	})
 	if err != nil {
 		log.Println(err)
-		return &api.UpdateActionResponse{}, errors.New("cannot insert the action")
+		errorStatus := status.Error(codes.Internal, "cannot update the action")
+		return &api.UpdateActionResponse{}, errorStatus
 	}
 
 	return &api.UpdateActionResponse{
@@ -93,12 +101,14 @@ func (h *Handler) DeleteAction(ctx context.Context, req *api.DeleteActionRequest
 	actionID, err := uuid.Parse(req.Id)
 	if err != nil {
 		log.Println(err)
-		return &api.DeleteActionResponse{}, errors.New("incorrect id format")
+		errorStatus := status.Error(codes.InvalidArgument, "incorrect id format")
+		return &api.DeleteActionResponse{}, errorStatus
 	}
 
 	if err := h.ActionService.Delete(ctx, actionID); err != nil {
 		log.Println(err)
-		return &api.DeleteActionResponse{}, errors.New("cannot insert the action")
+		errorStatus := status.Error(codes.Internal, "cannot delete the action")
+		return &api.DeleteActionResponse{}, errorStatus
 	}
 
 	return &api.DeleteActionResponse{
