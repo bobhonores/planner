@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/bobhonores/planner/internal/action"
 	"github.com/bobhonores/planner/internal/comment"
@@ -32,12 +33,18 @@ func Run() error {
 	actService := action.New(db)
 
 	grpcHandler := grpc.New(actService)
-	if err := grpcHandler.Serve(); err != nil {
-		return err
-	}
+	// TODO: make sure if some of the servers fail
+	// the other one must fail too
+	go func() {
+		if err := grpcHandler.Serve(); err != nil {
+			log.Print(err)
+			// return err
+		}
+	}()
 
 	httpHandler := transportHttp.NewHandler(cmtService)
 	if err := httpHandler.Serve(); err != nil {
+		log.Print(err)
 		return err
 	}
 
