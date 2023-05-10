@@ -3,6 +3,7 @@ package action
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -15,8 +16,10 @@ func TestActionService(t *testing.T) {
 
 	t.Run("test get action by id", func(t *testing.T) {
 		actionRepositoryMock := NewMockRepository(mockCtrl)
+
 		id := "c5392c8b-6a11-4868-9582-2d8d71118f50"
 		actionId, _ := uuid.Parse(id)
+
 		actionRepositoryMock.
 			EXPECT().
 			Get(context.Background(), id).
@@ -34,7 +37,21 @@ func TestActionService(t *testing.T) {
 	})
 
 	t.Run("test insert action", func(t *testing.T) {
-		fakeRepository := NewFakeActionRepository()
+		actionRepositoryMock := NewMockRepository(mockCtrl)
+
+		id := "c5392c8b-6a11-4868-9582-2d8d71118f50"
+		actionId, _ := uuid.Parse(id)
+
+		actionRepositoryMock.
+			EXPECT().
+			Insert(context.Background(), gomock.Any()).
+			Return(Action{
+				ID:          actionId,
+				Name:        "todo",
+				Description: "demo description",
+				Done:        false,
+				Created:     time.Now().UTC(),
+			}, nil)
 
 		inputCtx := context.Background()
 		inputAction := Action{
@@ -42,7 +59,7 @@ func TestActionService(t *testing.T) {
 			Description: "demo description",
 		}
 
-		actionService := New(fakeRepository)
+		actionService := New(actionRepositoryMock)
 		insertedAction, err := actionService.Insert(
 			inputCtx,
 			inputAction,
@@ -54,10 +71,22 @@ func TestActionService(t *testing.T) {
 	})
 
 	t.Run("test update action", func(t *testing.T) {
-		fakeRepository := NewFakeActionRepository()
+		actionRepositoryMock := NewMockRepository(mockCtrl)
 
 		id := "c5392c8b-6a11-4868-9582-2d8d71118f50"
 		actionId, _ := uuid.Parse(id)
+
+		actionRepositoryMock.
+			EXPECT().
+			Update(context.Background(), gomock.Any()).
+			Return(Action{
+				ID:          actionId,
+				Name:        "todo",
+				Description: "demo description",
+				Done:        true,
+				Created:     time.Now().UTC(),
+				Updated:     time.Now().UTC(),
+			}, nil)
 
 		inputCtx := context.Background()
 		inputAction := Action{
@@ -66,7 +95,7 @@ func TestActionService(t *testing.T) {
 			Description: "demo description",
 		}
 
-		actionService := New(fakeRepository)
+		actionService := New(actionRepositoryMock)
 		updatedAction, err := actionService.Update(
 			inputCtx,
 			inputAction,
@@ -80,8 +109,10 @@ func TestActionService(t *testing.T) {
 
 	t.Run("test delete action by id", func(t *testing.T) {
 		actionRepositoryMock := NewMockRepository(mockCtrl)
+
 		id := "c5392c8b-6a11-4868-9582-2d8d71118f50"
 		actionId, _ := uuid.Parse(id)
+
 		actionRepositoryMock.
 			EXPECT().
 			Delete(context.Background(), id).
