@@ -3,6 +3,7 @@ module github.com/bobhonores/planner
 go 1.20
 
 require (
+	github.com/brianvoe/gofakeit/v6 v6.21.0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
@@ -13,7 +14,6 @@ require (
 )
 
 require (
-	github.com/brianvoe/gofakeit/v6 v6.21.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
